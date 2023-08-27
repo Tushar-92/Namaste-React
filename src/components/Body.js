@@ -1,6 +1,7 @@
 import RestaurantCard from "./RestaurantCard";
 import { useState , useEffect } from "react";
 import Shimmer from "./Shimmer";
+import { Link } from "react-router-dom";
 
 const Body = () => {
 
@@ -18,12 +19,14 @@ const Body = () => {
   } , []);
 
   const fetchData = async () => {
-    const data = await fetch("https://www.swiggy.com/dapi/restaurants/list/v5?lat=25.2837754&lng=83.1155672&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING");
+    const data = await fetch(
+      "https://www.swiggy.com/dapi/restaurants/list/v5?lat=12.9351929&lng=77.62448069999999&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING"
+    );
     const jsonedData = await data.json();
     console.log(jsonedData); //For Self Analysis
-    // console.log(jsonedData.data.cards[4].card.card.gridElements.infoWithStyle.restaurants); //For Self Analysis
-    // setListOfRestaurant(jsonedData?.data?.cards[4]?.card?.card?.gridElements?.infoWithStyle?.restaurants);
-    // setFilteredRestaurant(jsonedData?.data?.cards[4]?.card?.card?.gridElements?.infoWithStyle?.restaurants);
+    console.log(jsonedData.data.cards[5].card.card.gridElements.infoWithStyle.restaurants); //For Self Analysis
+    setListOfRestaurant(jsonedData?.data?.cards[5]?.card?.card?.gridElements?.infoWithStyle?.restaurants);
+    setFilteredRestaurant(jsonedData?.data?.cards[5]?.card?.card?.gridElements?.infoWithStyle?.restaurants);
   }
 
   // Below is also known as Conditional Rendering:-- i.e if you have a condition and then you render according to the given condition then this is known as Conditional Rendering
@@ -33,33 +36,58 @@ const Body = () => {
   //Now ab isi Conditional Rendering ko niche diye hue return me ternary operation k sath fit kar de rahe. This is an industry standard. Actualy dono to return hi kar rahe the isliye eksath club kiye inko.
 
 
-  return listOfRestaurants.length === 0 ? (<Shimmer />) : (
+  return listOfRestaurants.length === 0 ? (
+    <Shimmer />
+  ) : (
     <div className="body">
       <div className="filter">
         <div className="search">
-          <input type="text" className="search-box" value={searchText} onChange={(e)=>{
-            setSearchText(e.target.value);
-          }}></input>
-          <button onClick={()=>{
-            // console.log(searchText); For Self Analysis
-            const filteredRestaurantList = listOfRestaurants.filter((restaurant)=>{
-              return restaurant.info.name.toLowerCase().includes(searchText.toLowerCase());
-            });
-            setFilteredRestaurant(filteredRestaurantList);
-          }}>Search</button>
+          <input
+            type="text"
+            className="search-box"
+            value={searchText}
+            onChange={(e) => {
+              setSearchText(e.target.value);
+            }}
+          ></input>
+          <button
+            onClick={() => {
+              // console.log(searchText); For Self Analysis
+              const filteredRestaurantList = listOfRestaurants.filter(
+                (restaurant) => {
+                  return restaurant.info.name
+                    .toLowerCase()
+                    .includes(searchText.toLowerCase());
+                }
+              );
+              setFilteredRestaurant(filteredRestaurantList);
+            }}
+          >
+            Search
+          </button>
         </div>
 
-        <button className="filter-btn" onClick={()=>{
-          const filteredList = listOfRestaurants.filter((restaurant) => {
-            return restaurant.info.avgRating > 3.5 
-          });
-          setListOfRestaurant(filteredList);
-          // console.log(filteredList);
-        }}>Top Rated Restaurants</button>
+        <button
+          className="filter-btn"
+          onClick={() => {
+            const filteredList = listOfRestaurants.filter((restaurant) => {
+              return restaurant.info.avgRating > 3.5;
+            });
+            setListOfRestaurant(filteredList);
+            // console.log(filteredList);
+          }}
+        >
+          Top Rated Restaurants
+        </button>
       </div>
       <div className="res-container">
         {filteredRestaurant.map((restaurant) => (
-          <RestaurantCard key={restaurant.info.id} resData={restaurant} />
+          <Link
+            key={restaurant.info.id}
+            to={"/restaurants/" + restaurant.info.id}
+          >
+            <RestaurantCard resData={restaurant} />
+          </Link>
         ))}
       </div>
     </div>
