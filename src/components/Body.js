@@ -2,6 +2,7 @@ import RestaurantCard from "./RestaurantCard";
 import { useState , useEffect } from "react";
 import Shimmer from "./Shimmer";
 import { Link } from "react-router-dom";
+import useOnlineStatus from '../utils/useOnlineStatus';
 
 const Body = () => {
 
@@ -9,6 +10,7 @@ const Body = () => {
   const [listOfRestaurants, setListOfRestaurant] = useState([]);
   const [filteredRestaurant, setFilteredRestaurant] = useState([]);
   const [searchText , setSearchText] = useState("");
+  const onlineStatus = useOnlineStatus();
 
   //Whenever the state variable update, react triggers a reconciliation cycle(re-render the component)
   console.log("Body Rendered");
@@ -22,12 +24,15 @@ const Body = () => {
     const data = await fetch(
       "https://www.swiggy.com/dapi/restaurants/list/v5?lat=12.9351929&lng=77.62448069999999&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING"
     );
-    const jsonedData = await data.json();
+    const jsonedData = await data.json(); // Await bcz this method also returns Promise. 
     console.log(jsonedData); //For Self Analysis
     console.log(jsonedData.data.cards[5].card.card.gridElements.infoWithStyle.restaurants); //For Self Analysis
     setListOfRestaurant(jsonedData?.data?.cards[5]?.card?.card?.gridElements?.infoWithStyle?.restaurants);
     setFilteredRestaurant(jsonedData?.data?.cards[5]?.card?.card?.gridElements?.infoWithStyle?.restaurants);
   }
+
+
+  if(onlineStatus === false) return <h1>Look's Like You Are Offline!! Please Check Your Internet Connection</h1>
 
   // Below is also known as Conditional Rendering:-- i.e if you have a condition and then you render according to the given condition then this is known as Conditional Rendering
   // if(listOfRestaurants.length === 0) {
