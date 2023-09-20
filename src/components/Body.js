@@ -1,4 +1,4 @@
-import RestaurantCard from "./RestaurantCard";
+import {RestaurantCard , withTopRatedLabel} from "./RestaurantCard";
 import { useState , useEffect } from "react";
 import Shimmer from "./Shimmer";
 import { Link } from "react-router-dom";
@@ -11,6 +11,7 @@ const Body = () => {
   const [filteredRestaurant, setFilteredRestaurant] = useState([]);
   const [searchText , setSearchText] = useState("");
   const onlineStatus = useOnlineStatus();
+  const RestaurantWithTopRatedLabel = withTopRatedLabel(RestaurantCard);
 
   //Whenever the state variable update, react triggers a reconciliation cycle(re-render the component)
   console.log("Body Rendered");
@@ -78,7 +79,7 @@ const Body = () => {
             className="filter-btn px-1 py-1 bg-slate-400 rounded-lg"
             onClick={() => {
               const filteredList = listOfRestaurants.filter((restaurant) => {
-                return restaurant.info.avgRating > 3.5;
+                return restaurant.info.avgRating > 4;
               });
               setListOfRestaurant(filteredList);
               // console.log(filteredList);
@@ -88,13 +89,18 @@ const Body = () => {
           </button>
         </div>
       </div>
+
       <div className="flex flex-wrap">
         {filteredRestaurant.map((restaurant) => (
           <Link
             key={restaurant.info.id}
             to={"/restaurants/" + restaurant.info.id}
           >
-            <RestaurantCard resData={restaurant} />
+            {restaurant.info.avgRating >= 4.5 ? (
+              <RestaurantWithTopRatedLabel resData={restaurant} />
+            ) : (
+              <RestaurantCard resData={restaurant} />
+            )}
           </Link>
         ))}
       </div>

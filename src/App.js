@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ReactDOM  from "react-dom/client";
 import { createBrowserRouter , RouterProvider , Outlet} from "react-router-dom";
+
 
 //Importing the components here
 import Header from "./components/Header";
@@ -10,13 +11,33 @@ import Contact from "./components/Contact";
 import Error from "./components/Error";
 import RestaurantMenu from "./components/RestaurantMenu";
 
+//Importing utils here
+import UserContext from "./utils/UserContext";
+
 
 const AppLayout = () => {
-    return (
+
+    const [userName, setUserName] = useState();
+
+    //Authentication
+    useEffect(() => {
+      //Make an api call and send username and password and then we get below data in response
+      const data = {
+        name: "Tushar Singh",
+      };
+
+      setUserName(data.name);
+    }, []);
+  
+  
+  
+  return (
+      <UserContext.Provider value={{ loggedInUser: userName }}>
         <div className="app">
-            <Header />
-            <Outlet />
+          <Header />
+          <Outlet />
         </div>
+      </UserContext.Provider>
     );
 }
 
